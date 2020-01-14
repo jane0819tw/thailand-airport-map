@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>thailand airport map</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div id="app">
+
+    <svg id="svg">
+      <g class="country">
+        <path v-for="county in counties" class="county"></path>
+      </g>
+      <g class="airport" v-for="airport in airports" :transform="getTransform(airport)">
+        <circle @click="clickAndSetMarker(airport)" class="point" r=2></circle>
+        <transition name="mark-fade" mode="out-in">
+          <circle v-show="nowMark===airport" class="range" r=5></circle>
+        </transition>
+
+      </g>
+
+      <g class="marker" v-for="marker in markers" :transform="`translate(${marker.x},${marker.y})`"
+        @mousemove="moveMarker($event,marker)" @mousedown="downMarker($event,marker)"
+        @mouseup="upMarker($event,marker)">
+        <path :transform="getScale(marker)"
+          d="M0 0l28.592-28.592c15.78-15.78 15.908-41.24.128-57.02a40.424 40.424 0 0 0-57.124 57.2z"
+          :fill="getTypeStyle(marker,1)">
+        </path>
+
+        <text v-if="marker.airport">{{marker.airport.properties.iata_code || marker.airport.properties.gps_code}}</text>
+      </g>
+
+
+    </svg>
+    <div class="panel">
+      <div class="title">{{title}}</div>
+      <div class="distance">{{distance}} KM</div>
+      <p>drag marker to calculate the distance. </p>
+      <div class="apMark" v-for="marker in markers" v-if="marker.airport">
+        <div class="typeColor" :style="getTypeStyle(marker)">
+          {{marker.airport.properties.type.split('_')[0].toUpperCase()}}
+        </div>
+        <div class="name">{{marker.airport.properties.name}}</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- use d3 geo -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-geo/1.9.1/d3-geo.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/5.15.0/d3.min.js"></script>
+
+  <!-- use attribute ({object}) -->
+  <script src="https://d3js.org/d3-selection-multi.v0.3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.10/vue.min.js"></script>
+  <script src="index.js"></script>
+</body>
+
+</html>
